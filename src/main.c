@@ -74,21 +74,28 @@ int init_sdl(void)
 		eprintf("Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 	}
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
 	return 0;
 }
 
 int run_game(void)
 {
-	tick_lua(get_time());
+	int quitflag = 0;
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	while(!quitflag)
+	{
+		tick_lua(get_time());
+		render_lua(get_time());
+		SDL_GL_SwapWindow(window);
 
-	render_lua(get_time());
-
-	SDL_GL_SwapWindow(window);
-	SDL_Delay(1000);
+		SDL_Event ev;
+		while(SDL_PollEvent(&ev) && !quitflag)
+		switch(ev.type)
+		{
+			case SDL_QUIT:
+				quitflag = 1;
+				break;
+		}
+	}
 
 	return 0;
 }

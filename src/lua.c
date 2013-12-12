@@ -27,6 +27,22 @@ int init_lua(void)
 	lua_pushcfunction(L, lf_blob_new); lua_setfield(L, -2, "new");
 	lua_setglobal(L, "blob");
 
+	// M (matrix)
+	lua_newtable(L);
+	lua_pushcfunction(L, lf_matrix_new); lua_setfield(L, -2, "new");
+	lua_pushcfunction(L, lf_matrix_load_modelview); lua_setfield(L, -2, "load_modelview");
+	lua_pushcfunction(L, lf_matrix_load_projection); lua_setfield(L, -2, "load_projection");
+	lua_pushcfunction(L, lf_matrix_identity); lua_setfield(L, -2, "identity");
+	lua_pushcfunction(L, lf_matrix_translate); lua_setfield(L, -2, "translate");
+	lua_pushcfunction(L, lf_matrix_scale); lua_setfield(L, -2, "scale");
+	lua_pushcfunction(L, lf_matrix_rotate); lua_setfield(L, -2, "rotate");
+	lua_setglobal(L, "M");
+
+	// GL
+	lua_newtable(L);
+	load_gl_lua_state(L);
+	lua_setglobal(L, "GL");
+
 	// RUN THE DAMN THING
 	if(luaL_dofile(L, "game/main.lua"))
 	{

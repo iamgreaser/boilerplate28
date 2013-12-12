@@ -17,7 +17,9 @@ OBJS = \
 	$(OBJDIR)/sackit/tables.o \
 	\
 	$(OBJDIR)/blob.o \
+	$(OBJDIR)/gl.o \
 	$(OBJDIR)/lua.o \
+	$(OBJDIR)/matrix.o \
 	\
 	$(OBJDIR)/main.o
 

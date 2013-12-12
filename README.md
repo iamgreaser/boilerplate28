@@ -9,6 +9,7 @@ TODO:
 C side contains:
 - blobs:
 - libsackit: For .it playback.
+- linmath.h: Available here: https://github.com/datenwolf/linmath.h
 
 Lua side contains:
 - Not much, really.
