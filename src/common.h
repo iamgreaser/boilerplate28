@@ -9,6 +9,8 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 #include <stdio.h>
 #include <errno.h>
 
+#include <zlib.h>
+
 #include <SDL.h>
 #include <GL/glew.h>
 
@@ -35,6 +37,14 @@ typedef struct blob
 	GLfloat data[];
 } blob_t;
 
+typedef struct img
+{
+	int w, h;
+	int gw, gh;
+	GLuint gltex;
+	uint32_t data[];
+} img_t;
+
 // blob.c
 blob_t *blob_new(lua_State *L, float *data, GLenum mode, int dims, int points);
 int lf_blob_new(lua_State *L);
@@ -59,6 +69,11 @@ int lf_matrix_apply(lua_State *L);
 int lf_matrix_translate(lua_State *L);
 int lf_matrix_scale(lua_State *L);
 int lf_matrix_rotate(lua_State *L);
+
+// png.c
+int lf_png_load(lua_State *L);
+int lf_png_get_dims(lua_State *L);
+int lf_png_render(lua_State *L);
 
 // main.c
 extern int mouse_x;

@@ -20,13 +20,14 @@ OBJS = \
 	$(OBJDIR)/gl.o \
 	$(OBJDIR)/lua.o \
 	$(OBJDIR)/matrix.o \
+	$(OBJDIR)/png.o \
 	\
 	$(OBJDIR)/main.o
 
 CFLAGS = -g -O2 -Isrc/ -Isrc/sackit/ `sdl2-config --cflags` -Wall -Wextra -Wno-unused-parameter
 LDFLAGS = -g
 LIBS_SDL = `sdl2-config --libs`
-LIBS = -lm -lGL -lGLEW -llua-5.1 $(LIBS_SDL)
+LIBS = -lm -lz -lGL -lGLEW -llua-5.1 $(LIBS_SDL)
 
 BINNAME = boilerplate28
 

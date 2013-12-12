@@ -30,7 +30,7 @@ int lf_blob_new(lua_State *L)
 	int i;
 
 	int top = lua_gettop(L);
-	if(top < 3) return luaL_error(L, "not enough arguments for blob_new");
+	if(top < 3) return luaL_error(L, "not enough arguments for blob.new");
 
 	GLenum mode = lua_tointeger(L, 1);
 	int dims = lua_tointeger(L, 2);
@@ -57,7 +57,7 @@ int lf_blob_new(lua_State *L)
 int lf_blob_render(lua_State *L)
 {
 	int top = lua_gettop(L);
-	if(top < 4) return luaL_error(L, "not enough arguments for blob_render");
+	if(top < 4) return luaL_error(L, "not enough arguments for blob.render");
 
 	blob_t *bl = lua_touserdata(L, 1);
 	double r = lua_tonumber(L, 2);

@@ -85,6 +85,8 @@ int run_game(void)
 {
 	int quitflag = 0;
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	while(!quitflag)
 	{
 		tick_lua(get_time());

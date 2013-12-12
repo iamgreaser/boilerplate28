@@ -53,6 +53,11 @@ int init_lua(void)
 	lua_pushcfunction(L, lf_blob_render); lua_setfield(L, -2, "render");
 	lua_setglobal(L, "blob");
 
+	// GL
+	lua_newtable(L);
+	load_gl_lua_state(L);
+	lua_setglobal(L, "GL");
+
 	// M (matrix)
 	lua_newtable(L);
 	lua_pushcfunction(L, lf_matrix_new); lua_setfield(L, -2, "new");
@@ -66,10 +71,12 @@ int init_lua(void)
 	lua_pushcfunction(L, lf_matrix_rotate); lua_setfield(L, -2, "rotate");
 	lua_setglobal(L, "M");
 
-	// GL
+	// png
 	lua_newtable(L);
-	load_gl_lua_state(L);
-	lua_setglobal(L, "GL");
+	lua_pushcfunction(L, lf_png_load); lua_setfield(L, -2, "load");
+	lua_pushcfunction(L, lf_png_get_dims); lua_setfield(L, -2, "get_dims");
+	lua_pushcfunction(L, lf_png_render); lua_setfield(L, -2, "render");
+	lua_setglobal(L, "png");
 
 	// RUN THE DAMN THING
 	if(luaL_dofile(L, "game/main.lua"))
