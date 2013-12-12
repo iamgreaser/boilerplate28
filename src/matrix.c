@@ -41,6 +41,26 @@ int lf_matrix_identity(lua_State *L)
 	return 0;
 }
 
+// M.dup((matrix)dst, (matrix)src): Duplicates a matrix.
+int lf_matrix_dup(lua_State *L)
+{
+	mat4x4 *dst = lua_touserdata(L, 1);
+	mat4x4 *src = lua_touserdata(L, 2);
+	mat4x4_dup(*dst, *src);
+	return 0;
+}
+
+// M.apply((matrix)dst, (matrix)src): Applies a matrix to another.
+int lf_matrix_apply(lua_State *L)
+{
+	mat4x4 *dst = lua_touserdata(L, 1);
+	mat4x4 *src = lua_touserdata(L, 2);
+	mat4x4 tmp;
+	mat4x4_dup(tmp, *dst);
+	mat4x4_mul(*dst, tmp, *src);
+	return 0;
+}
+
 // M.translate((matrix)m, (float)x, (float)y, (float)z): Translates the matrix.
 int lf_matrix_translate(lua_State *L)
 {

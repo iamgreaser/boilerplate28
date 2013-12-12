@@ -48,6 +48,8 @@ int init_lua(void)
 	lua_pushcfunction(L, lf_matrix_load_modelview); lua_setfield(L, -2, "load_modelview");
 	lua_pushcfunction(L, lf_matrix_load_projection); lua_setfield(L, -2, "load_projection");
 	lua_pushcfunction(L, lf_matrix_identity); lua_setfield(L, -2, "identity");
+	lua_pushcfunction(L, lf_matrix_dup); lua_setfield(L, -2, "dup");
+	lua_pushcfunction(L, lf_matrix_apply); lua_setfield(L, -2, "apply");
 	lua_pushcfunction(L, lf_matrix_translate); lua_setfield(L, -2, "translate");
 	lua_pushcfunction(L, lf_matrix_scale); lua_setfield(L, -2, "scale");
 	lua_pushcfunction(L, lf_matrix_rotate); lua_setfield(L, -2, "rotate");

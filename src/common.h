@@ -30,12 +30,13 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 
 typedef struct blob
 {
+	GLenum mode;
 	int dims, points;
 	GLfloat data[];
 } blob_t;
 
 // blob.c
-blob_t *blob_new(lua_State *L, float *data, int dims, int points);
+blob_t *blob_new(lua_State *L, float *data, GLenum mode, int dims, int points);
 int lf_blob_new(lua_State *L);
 int lf_blob_render(lua_State *L);
 
@@ -52,6 +53,8 @@ int lf_matrix_new(lua_State *L);
 int lf_matrix_load_modelview(lua_State *L);
 int lf_matrix_load_projection(lua_State *L);
 int lf_matrix_identity(lua_State *L);
+int lf_matrix_dup(lua_State *L);
+int lf_matrix_apply(lua_State *L);
 int lf_matrix_translate(lua_State *L);
 int lf_matrix_scale(lua_State *L);
 int lf_matrix_rotate(lua_State *L);

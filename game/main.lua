@@ -4,7 +4,7 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 ]]
 
 print("honk")
-bl_test = blob.new(2, {
+bl_test = blob.new(GL.TRIANGLE_FAN, 2, {
 	0,0,
 	1,0,
 	0,1,
