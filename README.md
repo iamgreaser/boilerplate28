@@ -1,18 +1,23 @@
 Some boilerplate code I wrote for Ludum Dare #28.
 
 TODO:
-- Allow rendering of blobs
 - Expose more OpenGL stuff to Lua
-- Support hooks
+- Support keyboard/mouse
+- Add sound
 - Actually use sackit
 
 C side contains:
-- blobs:
 - libsackit: For .it playback.
 - linmath.h: Available here: https://github.com/datenwolf/linmath.h
 
+Lua API contains:
+- blob: Triangle fans of a single colour.
+- GL: Part of the OpenGL API.
+- M: Matrix manipulation + loading into OpenGL.
+- sys: Little miscellaneous tidbits.
+
 Lua side contains:
-- Not much, really.
+- Nothing fancy at the moment.
 
 Needed extra libraries:
 - Lua 5.1 (**NOT 5.2!**)
