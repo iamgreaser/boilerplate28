@@ -24,10 +24,13 @@ OBJS = \
 	\
 	$(OBJDIR)/main.o
 
-CFLAGS = -g -O2 -Isrc/ -Isrc/sackit/ `sdl2-config --cflags` -Wall -Wextra -Wno-unused-parameter
+CFLAGS_SDL=`sdl2-config --cflags`
+CFLAGS = -g -O2 -Isrc/ -Isrc/sackit/ $(CFLAGS_SDL) -Wall -Wextra -Wno-unused-parameter
 LDFLAGS = -g
 LIBS_SDL = `sdl2-config --libs`
-LIBS = -lm -lz -lGL -lGLEW -llua-5.1 $(LIBS_SDL)
+LIBS_Lua = -llua-5.1
+LIBS_GL = -lGL -lGLEW
+LIBS = -lm $(LIBS_SDL) $(LIBS_Lua) -lz $(LIBS_GL)
 
 BINNAME = boilerplate28
 
