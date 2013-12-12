@@ -44,6 +44,7 @@ int lf_blob_render(lua_State *L);
 void load_gl_lua_state(lua_State *L);
 
 // lua.c
+extern lua_State *Lg;
 int init_lua(void);
 int render_lua(int64_t sec_current);
 int tick_lua(int64_t sec_current);
@@ -60,6 +61,8 @@ int lf_matrix_scale(lua_State *L);
 int lf_matrix_rotate(lua_State *L);
 
 // main.c
+extern int mouse_x;
+extern int mouse_y;
 extern int sys_width;
 extern int sys_height;
 void eprintf(const char *fmt, ...);

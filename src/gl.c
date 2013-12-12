@@ -46,7 +46,7 @@ void load_gl_lua_state(lua_State *L)
 	lua_pushinteger(L, GL_QUAD_STRIP); lua_setfield(L, -2, "QUAD_STRIP");
 	lua_pushinteger(L, GL_POLYGON); lua_setfield(L, -2, "POLYGON");
 
-	// 
+	// load functions
 	lua_pushcfunction(L, lf_glClearColor); lua_setfield(L, -2, "glClearColor");
 	lua_pushcfunction(L, lf_glClear); lua_setfield(L, -2, "glClear");
 }

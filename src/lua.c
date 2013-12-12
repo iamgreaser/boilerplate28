@@ -16,11 +16,21 @@ double time_to_float(int64_t time)
 	return ((double)time)/(double)TIME_PER_SECOND;
 }
 
-// sys.get_screen_dims(): Gets the screen dimensions((int)w, (int)h).
+// sys.get_screen_dims(): Gets the screen dimensions ((int)w, (int)h).
 int lf_sys_get_screen_dims(lua_State *L)
 {
 	lua_pushinteger(L, sys_width);
 	lua_pushinteger(L, sys_height);
+
+	return 2;
+}
+
+// sys.get_mouse(): Gets the mouse position ((int)x, (int)y).
+// Returns -1, -1 if the mouse is unfocused.
+int lf_sys_get_mouse(lua_State *L)
+{
+	lua_pushinteger(L, mouse_x);
+	lua_pushinteger(L, mouse_y);
 
 	return 2;
 }
@@ -34,6 +44,7 @@ int init_lua(void)
 	// sys
 	lua_newtable(L);
 	lua_pushcfunction(L, lf_sys_get_screen_dims); lua_setfield(L, -2, "get_screen_dims");
+	lua_pushcfunction(L, lf_sys_get_mouse); lua_setfield(L, -2, "get_mouse");
 	lua_setglobal(L, "sys");
 
 	// blob

@@ -7,6 +7,8 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 
 int sys_width = 800;
 int sys_height = 600;
+int mouse_x = -1;
+int mouse_y = -1;
 SDL_Window *window = NULL;
 SDL_GLContext context;
 
@@ -96,6 +98,37 @@ int run_game(void)
 			case SDL_QUIT:
 				quitflag = 1;
 				break;
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+				lua_getglobal(Lg, "hook_key");
+				lua_pushnumber(Lg, get_time());
+				lua_pushinteger(Lg, ev.key.keysym.mod);
+				lua_pushinteger(Lg, ev.key.keysym.sym);
+				lua_pushboolean(Lg, ev.type == SDL_KEYDOWN);
+				lua_call(Lg, 4, 0);
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+				lua_getglobal(Lg, "hook_click");
+				lua_pushnumber(Lg, get_time());
+				lua_pushinteger(Lg, ev.button.x);
+				lua_pushinteger(Lg, ev.button.y);
+				lua_pushinteger(Lg, ev.button.which);
+				lua_pushboolean(Lg, ev.type == SDL_MOUSEBUTTONDOWN);
+				lua_call(Lg, 5, 0);
+				break;
+			case SDL_MOUSEMOTION:
+				mouse_x = ev.motion.x;
+				mouse_y = ev.motion.y;
+				break;
+			case SDL_WINDOWEVENT:
+			switch(ev.window.event)
+			{
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+					mouse_x = -1;
+					mouse_y = -1;
+					break;
+			} break;
 		}
 	}
 

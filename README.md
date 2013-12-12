@@ -2,7 +2,6 @@ Some boilerplate code I wrote for Ludum Dare #28.
 
 TODO:
 - Expose more OpenGL stuff to Lua
-- Support keyboard/mouse
 - Add sound
 - Actually use sackit
 
@@ -15,6 +14,7 @@ Lua API contains:
 - GL: Part of the OpenGL API.
 - M: Matrix manipulation + loading into OpenGL.
 - sys: Little miscellaneous tidbits.
+- Hooks for: tick, render, keys, mouse buttons
 
 Lua side contains:
 - Nothing fancy at the moment.
