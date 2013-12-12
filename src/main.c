@@ -24,6 +24,23 @@ void eprintf(const char *fmt, ...)
 	va_end(va);
 }
 
+// Gets the current time relative to some point.
+int64_t get_time(void)
+{
+#ifdef WIN32
+	// Fuck you Windows.
+	return (int64_t)SDL_GetTicks();
+#else
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	int64_t sec = tv.tv_sec;
+	int64_t usec = tv.tv_usec;
+	sec *= (int64_t)1000000;
+	return sec + usec;
+#endif
+}
+
+// Set up SDL.
 int init_sdl(void)
 {
 	window = SDL_CreateWindow("Boilerplate 28",
@@ -64,7 +81,11 @@ int init_sdl(void)
 
 int run_game(void)
 {
+	tick_lua(get_time());
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+	render_lua(get_time());
 
 	SDL_GL_SwapWindow(window);
 	SDL_Delay(1000);

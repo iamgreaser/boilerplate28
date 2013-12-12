@@ -18,6 +18,14 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 
 #include <sackit.h>
 
+#ifdef WIN32
+// Fuck you Windows.
+#define TIME_PER_SECOND (1000)
+#else
+#include <sys/time.h>
+#define TIME_PER_SECOND (1000000)
+#endif
+
 typedef struct blob
 {
 	int dims, points;
@@ -30,7 +38,10 @@ int lf_blob_new(lua_State *L);
 
 // lua.c
 int init_lua(void);
+int render_lua(int64_t sec_current);
+int tick_lua(int64_t sec_current);
 
 // main.c
 void eprintf(const char *fmt, ...);
+int64_t get_time(void);
 

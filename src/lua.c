@@ -7,6 +7,16 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 
 lua_State *Lg = NULL;
 
+int64_t ltime_render = 0;
+int64_t ltime_tick = 0;
+
+// Converts the given time to a float.
+double time_to_float(int64_t time)
+{
+	return ((double)time)/(double)TIME_PER_SECOND;
+}
+
+// Set up Lua.
 int init_lua(void)
 {
 	lua_State *L = Lg = luaL_newstate();
@@ -25,6 +35,33 @@ int init_lua(void)
 		return 1;
 	}
 	
+	ltime_render = ltime_tick = get_time();
+	return 0;
+}
+
+int render_lua(int64_t sec_current)
+{
+	lua_State *L = Lg;
+
+	lua_getglobal(L, "hook_render");
+	lua_pushnumber(L, time_to_float(sec_current));
+	lua_pushnumber(L, time_to_float(sec_current - ltime_render));
+	ltime_render = sec_current;
+	lua_call(L, 2, 0); // TODO? lua_pcall?
+
+	return 0;
+}
+
+int tick_lua(int64_t sec_current)
+{
+	lua_State *L = Lg;
+
+	lua_getglobal(L, "hook_tick");
+	lua_pushnumber(L, time_to_float(sec_current));
+	lua_pushnumber(L, time_to_float(sec_current - ltime_tick));
+	ltime_tick = sec_current;
+	lua_call(L, 2, 0); // TODO? lua_pcall?
+
 	return 0;
 }
 
