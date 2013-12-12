@@ -39,7 +39,7 @@ int lf_blob_new(lua_State *L)
 	if(dims < 2 || dims > 4) return luaL_error(L, "dims size invalid");
 	if(ent_count % dims != 0) return luaL_error(L, "length invalid for dims");
 
-	blob_t *bl = blob_new(L, NULL, mode, dims, ent_count);
+	blob_t *bl = blob_new(L, NULL, mode, dims, ent_count / dims);
 	
 	for(i = 0; i < ent_count; i++)
 	{
