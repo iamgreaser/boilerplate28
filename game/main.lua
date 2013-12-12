@@ -93,8 +93,16 @@ function R.text_s(o, x, y, s, sx, sy, r, g, b, a)
 end
 
 --bl_test1 = D.ellipse(0, 0, 0.2-0.0, 0.3-0.0, 50)
-bl_test1 = D.star(0, 0, 0.30, 0.15, 5)
+--bl_test1 = D.star(0, 0, 0.30, 0.15, 5)
 --bl_test1 = D.eqpoly(0, 0, 0.30, 3)
+
+bl_test1 = blob.new(GL.TRIANGLE_STRIP, 2, {
+		-0.04, -0.1,
+		 0.04, -0.1,
+		-0.04,  0.7,
+		 0.04,  0.7,
+	})
+bl_test2 = D.eqpoly(0, 0, 0.30, 30)
 
 m_prj = M.new()
 m_cam = M.new()
@@ -106,15 +114,25 @@ local sw, sh = sys.get_screen_dims()
 M.scale(m_prj, sh/sw, 1.0, 1.0)
 M.translate(m_cam, 0.0, 0.0, -1.0)
 
+blob_palette = {
+	{1, 0, 0},
+	{1, 0.5, 0},
+	{1, 1, 0},
+	{0, 1, 0},
+}
 blob_pos = {}
 local i
 for i = 1,300 do
+	local c = math.floor(math.random()*#blob_palette)+1
 	blob_pos[i] = {
 		bx = math.random()*2-1,
 		by = math.random()*2-1,
 		s = math.random()*0.3+0.2,
 		ang = math.random() * math.pi * 2,
 		angspd = math.random() * 3.0 + 1.0,
+		r = blob_palette[c][1],
+		g = blob_palette[c][2],
+		b = blob_palette[c][3],
 	}
 	blob_pos[i].x = blob_pos[i].bx
 	blob_pos[i].y = blob_pos[i].by
@@ -180,7 +198,7 @@ function hook_render(sec_current, sec_delta)
 	-- Begin actual rendering!
 
 	local i, j
-	for j=1,3 do
+	for j=1,6 do
 		for i=1,#blob_pos do
 			local bp = blob_pos[i]
 			M.dup(m_camtmp, m_cam)
@@ -193,12 +211,22 @@ function hook_render(sec_current, sec_delta)
 			M.rotate(m_camtmp, bp.ang, 0, 0, 1)
 			M.apply(m_camtmp, m_cam)
 			M.load_modelview(m_camtmp)
+			
+			--[[
 			if j == 1 then blob.render(bl_test1, 0, 0, 0)
 			elseif j == 2 then blob.render(bl_test1, 0.9, 0.6, 0)
 			else blob.render(bl_test1, 1, 1, 0)
 			end
+			]]
+			if j == 1 then blob.render(bl_test1, 0, 0, 0)
+			elseif j == 2 then blob.render(bl_test2, 0, 0, 0)
+			elseif j == 3 then blob.render(bl_test1, 0.7, 0.7, 0.7)
+			elseif j == 4 then blob.render(bl_test1, 1, 1, 1)
+			elseif j == 5 then blob.render(bl_test2, bp.r, bp.g, bp.b, 0.5)
+			elseif j == 6 then blob.render(bl_test2, bp.r, bp.g, bp.b, 0.5)
+			end
 
-			if j == 2 then
+			if j == 6 then
 			bp.ang = bp.ang + bp.angspd*sec_delta
 			end
 		end
@@ -212,7 +240,7 @@ function hook_render(sec_current, sec_delta)
 	M.load_modelview (m_cam_hud)
 
 	local iw, ih = png.get_dims(img_font)
-	R.text_s(3, 100, 100, "You're a STAR!", 6, 6,
+	R.text_s(3, 100, 100, "You're a LOLLIPOP!", 6, 6,
 		math.sin(5*sec_current),
 		math.sin(5*sec_current + math.pi*2/3),
 		math.sin(5*sec_current + math.pi*4/3),
