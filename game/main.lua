@@ -83,6 +83,14 @@ function R.text(x, y, s, sx, sy, r, g, b, a)
 		x = x + 6*sx
 	end
 end
+function R.text_s(o, x, y, s, sx, sy, r, g, b, a)
+	a = a or 1
+	R.text(x + o, y, s, sx, sy, 0, 0, 0, a*0.7)
+	R.text(x - o, y, s, sx, sy, 0, 0, 0, a*0.7)
+	R.text(x, y + o, s, sx, sy, 0, 0, 0, a*0.7)
+	R.text(x, y - o, s, sx, sy, 0, 0, 0, a*0.7)
+	R.text(x, y, s, sx, sy, r, g, b, a)
+end
 
 --bl_test1 = D.ellipse(0, 0, 0.2-0.0, 0.3-0.0, 50)
 bl_test1 = D.star(0, 0, 0.30, 0.15, 5)
@@ -158,6 +166,7 @@ function hook_tick(sec_current, sec_delta)
 	end
 end
 
+fps_current = 1
 function hook_render(sec_current, sec_delta)
 	--print("render", sec_current, sec_delta)
 	local sw, sh = sys.get_screen_dims()
@@ -203,10 +212,14 @@ function hook_render(sec_current, sec_delta)
 	M.load_modelview (m_cam_hud)
 
 	local iw, ih = png.get_dims(img_font)
-	R.text(100, 100, "You're a STAR!", 6, 6,
+	R.text_s(3, 100, 100, "You're a STAR!", 6, 6,
 		math.sin(5*sec_current),
 		math.sin(5*sec_current + math.pi*2/3),
 		math.sin(5*sec_current + math.pi*4/3),
 		0.7)
+	
+	local fps_calc = 1.0/sec_delta
+	fps_current = fps_current + (fps_calc - fps_current) * 0.3
+	R.text_s(1, 8, sh-16-8, string.format("%.2f FPS", fps_current), 2, 2)
 end
 

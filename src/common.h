@@ -45,6 +45,26 @@ typedef struct img
 	uint32_t data[];
 } img_t;
 
+typedef struct snd snd_t;
+typedef struct voice voice_t;
+struct voice
+{
+	snd_t *snd;
+	voice_t *svprev, *svtail; // used for when snd gets garbage collected
+	float freq;
+	float offs;
+	float lvol, rvol;
+};
+
+struct snd
+{
+	voice_t *svtail; // used for when this snd_t gets garbage collected
+	float freq;
+	int lplen; // 0 == no loop
+	int len;
+	int16_t data[];
+};
+
 // blob.c
 blob_t *blob_new(lua_State *L, float *data, GLenum mode, int dims, int points);
 int lf_blob_new(lua_State *L);
