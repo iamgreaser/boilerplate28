@@ -9,18 +9,18 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 // Also returns a userdata on the Lua stack.
 blob_t *blob_new(lua_State *L, float *data, int dims, int points)
 {
-	blob_t *blob = lua_newuserdata(L, sizeof(blob_t)
+	blob_t *bl = lua_newuserdata(L, sizeof(blob_t)
 		+ (dims * points * sizeof(GLfloat)));
 	
 	// no __gc needed.
 	
-	blob->dims = dims;
-	blob->points = points;
+	bl->dims = dims;
+	bl->points = points;
 
 	if(data != NULL)
-		memcpy(blob->data, data, (dims * points * sizeof(GLfloat)));
+		memcpy(bl->data, data, (dims * points * sizeof(GLfloat)));
 
-	return blob;
+	return bl;
 }
 
 // blob.new((int)dims, (list)data): Creates a blob from a list.
@@ -37,7 +37,7 @@ int lf_blob_new(lua_State *L)
 	if(dims < 2 || dims > 4) return luaL_error(L, "dims size invalid");
 	if(ent_count % dims != 0) return luaL_error(L, "length invalid for dims");
 
-	blob_t *blob = blob_new(L, NULL, dims, ent_count);
+	blob_t *bl = blob_new(L, NULL, dims, ent_count);
 	
 	for(i = 0; i < ent_count; i++)
 	{
@@ -45,9 +45,29 @@ int lf_blob_new(lua_State *L)
 		lua_gettable(L, 2);
 		float v = lua_tonumber(L, -1);
 		lua_remove(L, -1);
-		blob->data[i] = v;
+		bl->data[i] = v;
 	}
 
 	return 1;
 }
 
+// blob.render((blob)bl, (float)r, (float)g, (float)b [, (float)a]): Renders a blob.
+int lf_blob_render(lua_State *L)
+{
+	int top = lua_gettop(L);
+	if(top < 4) return luaL_error(L, "not enough arguments for blob_render");
+
+	blob_t *bl = lua_touserdata(L, 1);
+	double r = lua_tonumber(L, 2);
+	double g = lua_tonumber(L, 3);
+	double b = lua_tonumber(L, 4);
+	double a = (top < 5 ? 1.0 : lua_tonumber(L, 5));
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glColor4d(r, g, b, a);
+	glVertexPointer(bl->dims, GL_FLOAT, 0, bl->data);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, bl->points);
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	return 0;
+}

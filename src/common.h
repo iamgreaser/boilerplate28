@@ -37,6 +37,7 @@ typedef struct blob
 // blob.c
 blob_t *blob_new(lua_State *L, float *data, int dims, int points);
 int lf_blob_new(lua_State *L);
+int lf_blob_render(lua_State *L);
 
 // gl.c
 void load_gl_lua_state(lua_State *L);
@@ -56,6 +57,8 @@ int lf_matrix_scale(lua_State *L);
 int lf_matrix_rotate(lua_State *L);
 
 // main.c
+extern int sys_width;
+extern int sys_height;
 void eprintf(const char *fmt, ...);
 int64_t get_time(void);
 

@@ -5,6 +5,8 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 
 #include "common.h"
 
+int sys_width = 800;
+int sys_height = 600;
 SDL_Window *window = NULL;
 SDL_GLContext context;
 
@@ -46,8 +48,8 @@ int init_sdl(void)
 	window = SDL_CreateWindow("Boilerplate 28",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		800,
-		600,
+		sys_width,
+		sys_height,
 
 		0
 		| SDL_WINDOW_OPENGL

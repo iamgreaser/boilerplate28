@@ -16,15 +16,30 @@ double time_to_float(int64_t time)
 	return ((double)time)/(double)TIME_PER_SECOND;
 }
 
+// sys.get_screen_dims(): Gets the screen dimensions((int)w, (int)h).
+int lf_sys_get_screen_dims(lua_State *L)
+{
+	lua_pushinteger(L, sys_width);
+	lua_pushinteger(L, sys_height);
+
+	return 2;
+}
+
 // Set up Lua.
 int init_lua(void)
 {
 	lua_State *L = Lg = luaL_newstate();
 	luaL_openlibs(L);
 
+	// sys
+	lua_newtable(L);
+	lua_pushcfunction(L, lf_sys_get_screen_dims); lua_setfield(L, -2, "get_screen_dims");
+	lua_setglobal(L, "sys");
+
 	// blob
 	lua_newtable(L);
 	lua_pushcfunction(L, lf_blob_new); lua_setfield(L, -2, "new");
+	lua_pushcfunction(L, lf_blob_render); lua_setfield(L, -2, "render");
 	lua_setglobal(L, "blob");
 
 	// M (matrix)
