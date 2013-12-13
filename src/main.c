@@ -85,6 +85,14 @@ int run_game(void)
 {
 	int quitflag = 0;
 
+	// LOAD THE DAMN THING
+	if(luaL_dofile(Lg, "game/main.lua"))
+	{
+		eprintf("lua: %s\n", lua_tostring(Lg, -1));
+		lua_remove(Lg, -1);
+		return 1;
+	}
+	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	while(!quitflag)

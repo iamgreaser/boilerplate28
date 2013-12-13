@@ -7,6 +7,9 @@ dofile("game/lib_sdlkey.lua")
 
 img_font = png.load("dat/font.png")
 w_splat1 = wav.load("dat/splat1.wav")
+m_lp64 = mus.load("dat/lp64-munch.it")
+mus.play(m_lp64)
+m_lp64 = nil
 
 D = {}
 function D.eqpoly(cx, cy, r, pcount)
@@ -159,6 +162,18 @@ end
 
 function hook_key(sec_current, mod, key, state)
 	print("key", sec_current, mod, key, state)
+	if state and key == SDLK_F1 then
+		m_lp64 = mus.load("dat/lp64-munch.it")
+		mus.play(m_lp64)
+		m_lp64 = nil
+	elseif state and key == SDLK_F2 then
+		m_lp64 = mus.load("dat/lp64-munch.it")
+		mus.play(m_lp64)
+		m_lp64 = nil
+		collectgarbage()
+	elseif state and key == SDLK_F3 then
+		mus.stop()
+	end
 end
 
 local lspeed = 3.0

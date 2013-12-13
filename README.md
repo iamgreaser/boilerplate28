@@ -1,8 +1,7 @@
 Some boilerplate code I wrote for Ludum Dare #28.
 
 TODO:
-- Expose more OpenGL stuff to Lua
-- Actually use sackit
+- Expose OpenGL's stenciling API
 
 C side contains:
 - libsackit: For .it playback.
@@ -13,12 +12,13 @@ Lua API contains:
 - GL: Part of the OpenGL API.
 - png: PNG loader + renderer.
 - M: Matrix manipulation + loading into OpenGL.
+- mus: ImpulseTracker module loading + playing.
 - sys: Little miscellaneous tidbits.
 - wav: Sound loading + playback.
 - Hooks for: tick, render, keys, mouse buttons.
 
 Lua side contains:
-- Nothing fancy at the moment.
+- Lollipop spam.
 
 Needed extra libraries:
 - Lua 5.1 (**NOT 5.2!**)

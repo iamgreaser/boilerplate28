@@ -20,6 +20,7 @@ OBJS = \
 	$(OBJDIR)/gl.o \
 	$(OBJDIR)/lua.o \
 	$(OBJDIR)/matrix.o \
+	$(OBJDIR)/mus.o \
 	$(OBJDIR)/png.o \
 	$(OBJDIR)/wav.o \
 	\

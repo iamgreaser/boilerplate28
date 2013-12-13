@@ -93,6 +93,11 @@ int lf_matrix_translate(lua_State *L);
 int lf_matrix_scale(lua_State *L);
 int lf_matrix_rotate(lua_State *L);
 
+// mus.c
+int lf_mus_load(lua_State *L);
+int lf_mus_play(lua_State *L);
+int lf_mus_stop(lua_State *L);
+
 // png.c
 int lf_png_load(lua_State *L);
 int lf_png_get_dims(lua_State *L);
@@ -100,6 +105,10 @@ int lf_png_render(lua_State *L);
 
 // wav.c
 #define WAV_SAMPLES 2048
+extern SDL_mutex *mtx_sackit;
+extern sackit_playback_t *sackit;
+extern it_module_t *mod_play;
+extern volatile int mod_luafree;
 int init_wav(void);
 int lf_wav_load(lua_State *L);
 int lf_wav_play(lua_State *L);

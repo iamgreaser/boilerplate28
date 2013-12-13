@@ -10,8 +10,8 @@ int wav_dev = 0;
 SDL_mutex *mtx_play = NULL;
 SDL_mutex *mtx_sackit = NULL;
 sackit_playback_t *sackit = NULL;
-it_module_t *it_mod_play = NULL;
-volatile int it_mod_luafree = 0;
+it_module_t *mod_play = NULL;
+volatile int mod_luafree = 0;
 voice_t *voice_chain = NULL;
 
 // SDL audio callback.
@@ -106,18 +106,31 @@ void cb_wav_update(void *userdata, Uint8 *stream, int len)
 		if(sackit == NULL)
 		{
 			// Check if we need to free the module
-			if(it_mod_play != NULL)
+			if(mod_play != NULL)
 			{
-				if(it_mod_luafree)
+				if(mod_luafree)
 				{
-					free(it_mod_play);
-					it_mod_luafree = 0;
+					free(mod_play);
+					mod_luafree = 0;
 				}
 
-				it_mod_play = NULL;
+				mod_play = NULL;
 			}
 		} else {
 			// TODO: update buffer
+			sackit_playback_update(sackit);
+
+			double mvol = 1.0;
+
+			for(i = 0; i < slen * 2; i++)
+			{
+				int v0 = ((int)(d[i])) + (mvol*(int)(sackit->buf[i]));
+
+				if(v0 < -0x8000) v0 = -0x8000;
+				if(v0 >  0x7FFF) v0 =  0x7FFF;
+
+				d[i] = v0;
+			}
 		}
 
 		SDL_UnlockMutex(mtx_sackit);
@@ -145,9 +158,9 @@ int init_wav(void)
 	// Fuck you Windows.
 	// (Technically it's SDL's fault for this subtle difference,
 	//  but Windows still sucks.)
-	wav_want.samples = WAV_SAMPLES / 2;
-#else
 	wav_want.samples = WAV_SAMPLES;
+#else
+	wav_want.samples = WAV_SAMPLES * 2;
 #endif
 	// and, uh, yeah.
 	wav_want.callback = cb_wav_update;

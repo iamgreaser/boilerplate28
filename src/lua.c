@@ -71,6 +71,13 @@ int init_lua(void)
 	lua_pushcfunction(L, lf_matrix_rotate); lua_setfield(L, -2, "rotate");
 	lua_setglobal(L, "M");
 
+	// mus
+	lua_newtable(L);
+	lua_pushcfunction(L, lf_mus_load); lua_setfield(L, -2, "load");
+	lua_pushcfunction(L, lf_mus_play); lua_setfield(L, -2, "play");
+	lua_pushcfunction(L, lf_mus_stop); lua_setfield(L, -2, "stop");
+	lua_setglobal(L, "mus");
+
 	// png
 	lua_newtable(L);
 	lua_pushcfunction(L, lf_png_load); lua_setfield(L, -2, "load");
@@ -84,14 +91,6 @@ int init_lua(void)
 	lua_pushcfunction(L, lf_wav_play); lua_setfield(L, -2, "play");
 	lua_setglobal(L, "wav");
 
-	// RUN THE DAMN THING
-	if(luaL_dofile(L, "game/main.lua"))
-	{
-		eprintf("lua: %s\n", lua_tostring(L, -1));
-		lua_remove(L, -1);
-		return 1;
-	}
-	
 	ltime_render = ltime_tick = get_time();
 	return 0;
 }
