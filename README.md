@@ -2,7 +2,6 @@ Some boilerplate code I wrote for Ludum Dare #28.
 
 TODO:
 - Expose more OpenGL stuff to Lua
-- Add sound
 - Actually use sackit
 
 C side contains:
@@ -15,7 +14,8 @@ Lua API contains:
 - png: PNG loader + renderer.
 - M: Matrix manipulation + loading into OpenGL.
 - sys: Little miscellaneous tidbits.
-- Hooks for: tick, render, keys, mouse buttons
+- wav: Sound loading + playback.
+- Hooks for: tick, render, keys, mouse buttons.
 
 Lua side contains:
 - Nothing fancy at the moment.
