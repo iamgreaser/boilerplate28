@@ -115,7 +115,7 @@ int run_game(void)
 				lua_pushnumber(Lg, get_time());
 				lua_pushinteger(Lg, ev.button.x);
 				lua_pushinteger(Lg, ev.button.y);
-				lua_pushinteger(Lg, ev.button.which);
+				lua_pushinteger(Lg, ev.button.button);
 				lua_pushboolean(Lg, ev.type == SDL_MOUSEBUTTONDOWN);
 				lua_call(Lg, 5, 0);
 				break;
@@ -141,10 +141,14 @@ int run_game(void)
 int main(int argc, char *argv[])
 {
 	SDL_Init(SDL_INIT_TIMER
+		|SDL_INIT_AUDIO
 		|SDL_INIT_VIDEO);
 
 	atexit(SDL_Quit);
 	
-	return init_sdl() || init_lua() || run_game();
+	return init_sdl()
+		|| init_lua()
+		|| init_wav()
+		|| run_game();
 }
 

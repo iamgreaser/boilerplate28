@@ -146,9 +146,9 @@ mouse_b_right = false
 
 function hook_click(sec_current, mx, my, button, state)
 	print("click", sec_current, mx, my, button, state)
-	if button == 0 then mouse_b_left = state
-	elseif button == 1 then mouse_b_middle = state
-	elseif button == 2 then mouse_b_right = state
+	if button == 1 then mouse_b_left = state
+	elseif button == 2 then mouse_b_middle = state
+	elseif button == 3 then mouse_b_right = state
 	end
 end
 
@@ -247,7 +247,7 @@ function hook_render(sec_current, sec_delta)
 		0.7)
 	
 	local fps_calc = 1.0/sec_delta
-	fps_current = fps_current + (fps_calc - fps_current) * 0.3
+	fps_current = fps_current + (fps_calc - fps_current) * 0.1
 	R.text_s(1, 8, sh-16-8, string.format("%.2f FPS", fps_current), 2, 2)
 end
 

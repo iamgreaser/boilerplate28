@@ -45,21 +45,23 @@ typedef struct img
 	uint32_t data[];
 } img_t;
 
-typedef struct snd snd_t;
+typedef struct wav wav_t;
 typedef struct voice voice_t;
 struct voice
 {
-	snd_t *snd;
-	voice_t *svprev, *svtail; // used for when snd gets garbage collected
+	wav_t *wav;
+	voice_t *svprev, *svtail; // used for when wav gets garbage collected
+	voice_t *pprev, *ptail; // used for the actual playing of stuff
 	float freq;
 	float offs;
 	float lvol, rvol;
 };
 
-struct snd
+struct wav
 {
-	voice_t *svtail; // used for when this snd_t gets garbage collected
+	voice_t *svtail; // used for when this wav_t gets garbage collected
 	float freq;
+	int chns; // 1 == mono, 2 == stereo
 	int lplen; // 0 == no loop
 	int len;
 	int16_t data[];
@@ -94,6 +96,10 @@ int lf_matrix_rotate(lua_State *L);
 int lf_png_load(lua_State *L);
 int lf_png_get_dims(lua_State *L);
 int lf_png_render(lua_State *L);
+
+// wav.c
+#define WAV_SAMPLES 2048
+int init_wav(void);
 
 // main.c
 extern int mouse_x;

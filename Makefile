@@ -21,6 +21,7 @@ OBJS = \
 	$(OBJDIR)/lua.o \
 	$(OBJDIR)/matrix.o \
 	$(OBJDIR)/png.o \
+	$(OBJDIR)/wav.o \
 	\
 	$(OBJDIR)/main.o
 
