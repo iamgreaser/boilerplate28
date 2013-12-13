@@ -50,7 +50,7 @@ typedef struct voice voice_t;
 struct voice
 {
 	wav_t *wav;
-	voice_t ***ud;
+	voice_t **ud;
 	voice_t *svprev, *svtail; // used for when wav gets garbage collected
 	voice_t *pprev, *ptail; // used for the actual playing of stuff
 	float freq;
