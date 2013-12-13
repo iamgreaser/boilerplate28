@@ -50,6 +50,7 @@ typedef struct voice voice_t;
 struct voice
 {
 	wav_t *wav;
+	voice_t ***ud;
 	voice_t *svprev, *svtail; // used for when wav gets garbage collected
 	voice_t *pprev, *ptail; // used for the actual playing of stuff
 	float freq;
@@ -100,6 +101,8 @@ int lf_png_render(lua_State *L);
 // wav.c
 #define WAV_SAMPLES 2048
 int init_wav(void);
+int lf_wav_load(lua_State *L);
+int lf_wav_play(lua_State *L);
 
 // main.c
 extern int mouse_x;

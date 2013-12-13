@@ -6,6 +6,7 @@ Boilerplate 28: GreaseMonkey's boilerplate code for Ludum Dare #28
 dofile("game/lib_sdlkey.lua")
 
 img_font = png.load("dat/font.png")
+w_splat1 = wav.load("dat/splat1.wav")
 
 D = {}
 function D.eqpoly(cx, cy, r, pcount)
@@ -149,6 +150,10 @@ function hook_click(sec_current, mx, my, button, state)
 	if button == 1 then mouse_b_left = state
 	elseif button == 2 then mouse_b_middle = state
 	elseif button == 3 then mouse_b_right = state
+	end
+
+	if state and w_splat1 ~= nil then
+		wav.play(w_splat1, 1.0, 1.0, 1 + 0.3*(math.random()*2-1))
 	end
 end
 

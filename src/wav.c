@@ -23,11 +23,85 @@ void cb_wav_update(void *userdata, Uint8 *stream, int len)
 	int slen = len / 4;
 	int16_t *d = (int16_t *)stream;
 
-	printf("slen %i\n", slen);
+	//printf("slen %i\n", slen);
 	for(i = 0; i < slen; i++)
 		d[2*i+0] = d[2*i+1] = 0;
 	
 	if(SDL_LockMutex(mtx_play) == 0)
+	{
+		voice_t *v;
+		voice_t fv; // fake voice used to make the loop not crash on voice kill
+
+		for(v = voice_chain; v != NULL; v = v->ptail)
+		{
+			wav_t *w = v->wav;
+
+			double vspd = v->freq / (double)(wav_have.freq);
+			double vm0 = v->lvol;
+			double vm1 = v->rvol;
+
+			for(i = 0; i < slen; i++)
+			{
+				int vp0, vp1;
+				int vp = v->offs;
+
+				if(vp >= w->len)
+				{
+					if(w->lplen == 0)
+					{
+						// kill voice
+						//printf("voice kill: %p\n", v);
+
+						if(w->svtail == v) w->svtail = v->svtail;
+						if(v->svprev != NULL) v->svprev->svtail = v->svtail;
+						if(v->svtail != NULL) v->svtail->svprev = v->svprev;
+						if(v->pprev != NULL) v->pprev->ptail = v->ptail;
+						if(v->ptail != NULL) v->ptail->pprev = v->pprev;
+
+						if(voice_chain == v) voice_chain = v->ptail;
+
+						if(v->ud != NULL) *(v->ud) = NULL;
+						fv.ptail = v->ptail;
+						fv.pprev = NULL;
+						free(v);
+						v = &fv;
+						break;
+					} else {
+						vp = (vp - w->len) % w->lplen
+							+ (w->len - w->lplen);
+					}
+				}
+
+				if(vp >= 0)
+				{
+					if(w->chns == 1)
+					{
+						vp0 = vp1 = vp;
+					} else {
+						vp0 = 2 * vp + 0;
+						vp1 = 2 * vp + 1;
+					}
+
+					int v0 = ((int)(d[2 * i + 0])) + (vm0*(int)(w->data[vp0]));
+					int v1 = ((int)(d[2 * i + 1])) + (vm1*(int)(w->data[vp1]));
+
+					if(v0 < -0x8000) v0 = -0x8000;
+					if(v0 >  0x7FFF) v0 =  0x7FFF;
+					if(v1 < -0x8000) v1 = -0x8000;
+					if(v1 >  0x7FFF) v1 =  0x7FFF;
+
+					d[2 * i + 0] = v0;
+					d[2 * i + 1] = v1;
+				}
+				
+				v->offs += vspd;
+			}
+		}
+
+		SDL_UnlockMutex(mtx_play);
+	}
+
+	if(SDL_LockMutex(mtx_sackit) == 0)
 	{
 		if(sackit == NULL)
 		{
@@ -46,13 +120,7 @@ void cb_wav_update(void *userdata, Uint8 *stream, int len)
 			// TODO: update buffer
 		}
 
-		voice_t *v;
-		for(v = voice_chain; v != NULL; v = v->ptail)
-		{
-			// TODO: mix in voices
-		}
-
-		SDL_UnlockMutex(mtx_play);
+		SDL_UnlockMutex(mtx_sackit);
 	}
 }
 
@@ -73,7 +141,14 @@ int init_wav(void)
 	// and only building the stereo 2.14 filter nointerp mixer,
 	wav_want.channels = 2;
 	// check common.h for this setting. might make it a user setting somehow.
+#ifdef WIN32
+	// Fuck you Windows.
+	// (Technically it's SDL's fault for this subtle difference,
+	//  but Windows still sucks.)
+	wav_want.samples = WAV_SAMPLES / 2;
+#else
 	wav_want.samples = WAV_SAMPLES;
+#endif
 	// and, uh, yeah.
 	wav_want.callback = cb_wav_update;
 
@@ -90,11 +165,34 @@ int init_wav(void)
 	return 0;
 }
 
+// voice __gc metatable function.
+int lmf_voice_gc(lua_State *L)
+{
+	voice_t **p = lua_touserdata(L, 1);
+	//printf("voice gc: %p\n", p);
+
+	if(SDL_LockMutex(mtx_play) == 0)
+	{
+		if(*p != NULL)
+			(*p)->ud = NULL;
+	} else {
+		printf("PANIC: Could not lock global wav mutex!\n"); 
+		fflush(stdout);
+		abort();
+	}
+
+	SDL_UnlockMutex(mtx_play);
+
+	return 0;
+}
+
 // wav __gc metatable function.
 int lmf_wav_gc(lua_State *L)
 {
 	voice_t *v, *v2;
 	wav_t *wav = lua_touserdata(L, 1);
+
+	//printf("wav gc: %p\n", wav);
 
 	if(SDL_LockMutex(mtx_play) == 0)
 	{
@@ -104,7 +202,10 @@ int lmf_wav_gc(lua_State *L)
 
 			if(v->pprev != NULL) v->pprev->ptail = v->ptail;
 			if(v->ptail != NULL) v->ptail->pprev = v->pprev;
+			if(voice_chain == v) voice_chain = v->ptail;
 			// svprev and svtail don't matter - we're clearing that whole chain
+
+			if(v->ud != NULL) *(v->ud) = NULL;
 
 			free(v);
 		}
@@ -292,16 +393,97 @@ wav_t *wav_load(lua_State *L, const char *fname)
 	}
 
 	free(data);
+
+	lua_newtable(L);
+	lua_pushcfunction(L, lmf_wav_gc);
+	lua_setfield(L, -2, "__gc");
+	lua_setmetatable(L, -2);
+
 	return wav;
 }
 
 // Plays a .wav sound.
-// Returns the voice userdata on the Lua stack provided the result isn't NULL.
-voice_t *wav_play(lua_State *L, wav_t *wav)
+// Returns the voice pointer userdata on the Lua stack provided the result isn't NULL.
+voice_t *wav_play(lua_State *L, wav_t *wav, float freq, float offs, float lvol, float rvol)
 {
 	if(wav == NULL) return NULL;
 
-	// TODO!
-	return NULL;
+	voice_t *v = malloc(sizeof(voice_t));
+
+	v->svprev = NULL;
+	v->svtail = wav->svtail;
+	if(wav->svtail != NULL) wav->svtail->svprev = v;
+	wav->svtail = v;
+
+	v->pprev = NULL;
+	v->ptail = voice_chain;
+	if(voice_chain != NULL) voice_chain->pprev = v;
+	voice_chain = v;
+
+	v->wav = wav;
+	v->freq = freq;
+	v->offs = offs;
+	v->lvol = lvol;
+	v->rvol = rvol;
+
+	voice_t **ret = lua_newuserdata(L, sizeof(voice_t *));
+	v->ud = ret;
+	*ret = v;
+
+	lua_newtable(L);
+	lua_pushcfunction(L, lmf_voice_gc);
+	lua_setfield(L, -2, "__gc");
+	lua_setmetatable(L, -2);
+
+	return v;
 }
 
+// wav.load((str)fname): Loads a RIFF WAVE file.
+int lf_wav_load(lua_State *L)
+{
+	int top = lua_gettop(L);
+	if(top < 1) return luaL_error(L, "not enough arguments for wav.load");
+
+	const char *fname = lua_tostring(L, 1);
+
+	wav_t *wav = wav_load(L, fname);
+	if(wav == NULL)
+		return luaL_error(L, "failed to parse wav file %s", fname);
+
+	return 1;
+}
+
+// wav.play((wav)w, (float)lvol=1, (float)rvol=lvol, (float)freq=1, (float)offs=0):
+// Plays a sound. freq is a frequency multiplier.
+// offs is in seconds relative to freq=1. It can be negative to add some leading silence.
+// Returns a voice pointer userdata.
+int lf_wav_play(lua_State *L)
+{
+	int top = lua_gettop(L);
+	if(top < 1) return luaL_error(L, "not enough arguments for wav.play");
+
+	if(SDL_LockMutex(mtx_play) != 0)
+	{
+		eprintf("wav.play: could not lock mutex!\n");
+		return luaL_error(L, "could not lock mutex for wav.play");
+	}
+
+	wav_t *wav = lua_touserdata(L, 1);
+	if(wav == NULL) return luaL_error(L, "expected userdata for wav.play");
+	double lvol = (top < 2 ? 1.0 : lua_tonumber(L, 2));
+	double rvol = (top < 3 ? lvol : lua_tonumber(L, 3));
+	double freq = (top < 4 ? 1.0 : lua_tonumber(L, 4));
+	double offs = (top < 5 ? 0.0 : lua_tonumber(L, 5));
+
+	offs *= (double)(wav->freq);
+	freq *= (double)(wav->freq);
+
+	//printf("v %f %f %f %f\b", offs, freq, lvol, rvol);
+	voice_t *v = wav_play(L, wav, freq, offs, lvol, rvol);
+	if(v == NULL)
+		return 0; // don't return a voice pointer
+
+	SDL_UnlockMutex(mtx_play);
+
+	return 1;
+}

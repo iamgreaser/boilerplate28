@@ -78,6 +78,12 @@ int init_lua(void)
 	lua_pushcfunction(L, lf_png_render); lua_setfield(L, -2, "render");
 	lua_setglobal(L, "png");
 
+	// wav
+	lua_newtable(L);
+	lua_pushcfunction(L, lf_wav_load); lua_setfield(L, -2, "load");
+	lua_pushcfunction(L, lf_wav_play); lua_setfield(L, -2, "play");
+	lua_setglobal(L, "wav");
+
 	// RUN THE DAMN THING
 	if(luaL_dofile(L, "game/main.lua"))
 	{
